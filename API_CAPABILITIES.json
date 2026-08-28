@@ -16,6 +16,12 @@
     },
     {
       "method": "GET",
+      "path": "/rooms/{room_id}/bootstrap?player_id={player_id}",
+      "status": "active",
+      "purpose": "讓沒有對話歷史的玩家 Codex 取得安全操作說明、劇本開場、創角規則與初始視圖"
+    },
+    {
+      "method": "GET",
       "path": "/rooms/{room_id}/view?player_id={player_id}",
       "status": "active",
       "purpose": "取得該玩家可見的世界、角色、物品、情報與事件"

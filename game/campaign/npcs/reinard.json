@@ -1,0 +1,20 @@
+{
+  "npc_id": "reinard",
+  "name": "reinard",
+  "definition_version": 1,
+  "status": "defined",
+  "context_tags": [
+    "north-border",
+    "royal-court"
+  ],
+  "base_description": "騎士長，王國安全派。",
+  "public_information": [
+    "不是舊誓核心成員。"
+  ],
+  "gm_notes": [
+    "被污染情報與長期隱瞞影響判斷；可能轉為王都軍事盟友。"
+  ],
+  "initial_relationships": {},
+  "secrets": [],
+  "runtime_created_on_enter": true
+}

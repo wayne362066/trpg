@@ -1,0 +1,19 @@
+{
+  "npc_id": "true-gatekeeper",
+  "name": "真守門人",
+  "definition_version": 1,
+  "status": "defined",
+  "context_tags": [
+    "oath-well"
+  ],
+  "base_description": "正統繼承者；身分真實但傳承已被歷史污染。",
+  "public_information": [
+    "真心相信自己在保護世界。"
+  ],
+  "gm_notes": [
+    "若看到襲擊與原始紀錄矛盾，會陷入身分危機；原始職責是守護選擇權。"
+  ],
+  "initial_relationships": {},
+  "secrets": [],
+  "runtime_created_on_enter": true
+}

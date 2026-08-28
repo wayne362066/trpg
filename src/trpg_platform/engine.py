@@ -78,7 +78,14 @@ class GameEngine:
         directory = self.store.path("shared/npcs")
         if not directory.exists():
             return []
-        return sorted(path.stem for path in directory.glob("*.json"))
+        available = {path.stem for path in directory.glob("*.json")}
+        index = self.store.read_json("campaign/content_index.json", {})
+        configured = {
+            str(item.get("id"))
+            for item in index.get("npcs", [])
+            if isinstance(item, dict) and item.get("status") == "active" and item.get("runtime_path")
+        }
+        return sorted(available & configured) if configured else sorted(available)
 
     def _require_npc(self, npc_id: str) -> None:
         if npc_id not in self._npc_ids():
@@ -151,6 +158,10 @@ class GameEngine:
             "campaign/rules.md",
             "campaign/character_creation.md",
             "campaign/content_index.json",
+            "campaign/ai_campaign_protocol.md",
+            "campaign/timeline.md",
+            "campaign/dice_rules.md",
+            "campaign/gm_reference.md",
         ]
         missing = [relative for relative in required if not self.store.path(relative).exists()]
         if missing:
@@ -161,6 +172,36 @@ class GameEngine:
             "gm_settings": self._read_json_text("campaign/gm_settings.json"),
             "character_creation": self._read_text("campaign/character_creation.md"),
             "content_index": self._read_json_text("campaign/content_index.json"),
+            "campaign_ai_protocol": self._read_text("campaign/ai_campaign_protocol.md"),
+            "timeline": self._read_text("campaign/timeline.md"),
+            "dice_rules": self._read_text("campaign/dice_rules.md"),
+            "gm_reference": self._read_text("campaign/gm_reference.md"),
+        }
+
+    def _indexed_content(self, scene: str) -> dict[str, list[dict[str, Any]]]:
+        """Load active definitions relevant to the current scene for the GM."""
+        index = self.store.read_json("campaign/content_index.json", {})
+
+        def load_entries(entries: Any) -> list[dict[str, Any]]:
+            loaded = []
+            for entry in entries if isinstance(entries, list) else []:
+                if not isinstance(entry, dict) or entry.get("status") != "active":
+                    continue
+                tags = entry.get("context_tags", [])
+                if tags and scene not in tags and "global" not in tags:
+                    continue
+                path = entry.get("definition_path") or entry.get("path")
+                if not isinstance(path, str):
+                    continue
+                definition = self.store.read_json(path, None)
+                if isinstance(definition, dict):
+                    loaded.append(definition)
+            return loaded
+
+        return {
+            "regions": load_entries(index.get("regions")),
+            "npcs": load_entries(index.get("npcs")),
+            "quests": load_entries(index.get("quests")),
         }
 
     def _read_text(self, relative: str) -> str:
@@ -179,6 +220,8 @@ class GameEngine:
         player_memories = self.store.read_json(
             self._player_file(actor_id, "npc_memories"), {"memories": []}
         )
+        world = self.store.read_json("shared/world.json", {})
+        scene = world.get("scene", "")
         npcs = [self.store.read_json(self._npc_file(npc_id), {}) for npc_id in self._npc_ids()]
         actor_npc_memories = {
             npc.get("npc_id"): copy.deepcopy(npc.get("private_memories", {}).get(actor_id, []))
@@ -200,6 +243,10 @@ class GameEngine:
                     "CONTENT_LIFECYCLE.md",
                     "game/campaign/content_index.json",
                     "API_CAPABILITIES.json",
+                    "game/campaign/ai_campaign_protocol.md",
+                    "game/campaign/timeline.md",
+                    "game/campaign/dice_rules.md",
+                    "game/campaign/gm_reference.md",
                     "relevant shared runtime state",
                     "actor private data",
                 ],
@@ -215,15 +262,20 @@ class GameEngine:
                     "CONTENT_LIFECYCLE.md",
                     "game/campaign/content_index.json",
                     "API_CAPABILITIES.json",
+                    "game/campaign/ai_campaign_protocol.md",
+                    "game/campaign/timeline.md",
+                    "game/campaign/dice_rules.md",
+                    "game/campaign/gm_reference.md",
                 ],
             },
             "protocol": self._protocol(),
             "api_capabilities": self.api_capabilities_path.read_text(encoding="utf-8"),
             "manifest": self.manifest,
             "campaign": self._campaign_context(),
+            "indexed_content": self._indexed_content(scene),
             "room": {
                 "room_id": self.manifest.get("room_id", "main"),
-                "scene": self.store.read_json("shared/world.json", {}).get("scene"),
+                "scene": scene,
                 "state_version": self.manifest.get("state_version", 0),
             },
             "public_players": [self._public_player_summary(pid) for pid in self._player_ids()],

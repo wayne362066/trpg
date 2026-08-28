@@ -1,0 +1,19 @@
+{
+  "npc_id": "mira",
+  "name": "mira",
+  "definition_version": 1,
+  "status": "defined",
+  "context_tags": [
+    "north-border"
+  ],
+  "base_description": "米拉，邊境偵察隊長。",
+  "public_information": [
+    "可提供偽裝襲擊的現場證據。"
+  ],
+  "gm_notes": [
+    "可作為替代證據來源；不跑此支線時可由其他情報替代。"
+  ],
+  "initial_relationships": {},
+  "secrets": [],
+  "runtime_created_on_enter": true
+}

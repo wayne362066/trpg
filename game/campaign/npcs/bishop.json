@@ -1,0 +1,20 @@
+{
+  "npc_id": "bishop",
+  "name": "bishop-001",
+  "definition_version": 1,
+  "status": "defined",
+  "context_tags": [
+    "temple-archives",
+    "royal-court"
+  ],
+  "base_description": "教廷調查者，掌握史料缺口與封存檔案線索。",
+  "public_information": [
+    "教廷高階調查者。"
+  ],
+  "gm_notes": [
+    "可帶回歷史上類神術但無法確認神恩來源的持誓者紀錄。"
+  ],
+  "initial_relationships": {},
+  "secrets": [],
+  "runtime_created_on_enter": true
+}

@@ -1,0 +1,20 @@
+{
+  "npc_id": "false-gatekeeper",
+  "name": "假守門人",
+  "definition_version": 1,
+  "status": "defined",
+  "context_tags": [
+    "north-border",
+    "oath-well"
+  ],
+  "base_description": "核心誤導者；大量陳述是真，危險在於因果推論。",
+  "public_information": [
+    "可能自稱守門人並提供可驗證的真情報。"
+  ],
+  "gm_notes": [
+    "目的不是立刻殺玩家，而是讓危機—承擔—重置循環再度發生。"
+  ],
+  "initial_relationships": {},
+  "secrets": [],
+  "runtime_created_on_enter": true
+}

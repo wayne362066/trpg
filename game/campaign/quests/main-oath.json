@@ -1,0 +1,68 @@
+{
+  "quest_id": "main-oath",
+  "name": "七日誓約",
+  "status": "active",
+  "definition_version": 1,
+  "summary": "在七日倒數內辨認三誓的真正核心，並決定是否重演舊解。",
+  "phases": [
+    {
+      "id": "day-1",
+      "label": "不知道發生什麼",
+      "focus": "傷患、停戰與倒數"
+    },
+    {
+      "id": "day-2",
+      "label": "開始決定相信誰",
+      "focus": "敵方傷患、守門人傳聞與十四年前片段"
+    },
+    {
+      "id": "day-3",
+      "label": "錯誤答案開始成形",
+      "focus": "真情報與錯誤因果"
+    },
+    {
+      "id": "day-4",
+      "label": "得到有效但危險的解法",
+      "focus": "前任勇者與承擔方案"
+    },
+    {
+      "id": "day-5",
+      "label": "沒有時間了",
+      "focus": "停戰、政治、倒數與偽裝襲擊逼近臨界"
+    },
+    {
+      "id": "day-6",
+      "label": "玩家開始比 NPC 知道得多",
+      "focus": "交叉驗證"
+    },
+    {
+      "id": "day-7",
+      "label": "你敢相信自己的答案嗎",
+      "focus": "重演、封印或重新建立三方自願誓約"
+    }
+  ],
+  "true_path_evidence": [
+    "舊解並非唯一",
+    "三誓核心與自願／選擇有關",
+    "當代三方具備重新選擇的現實條件"
+  ],
+  "flags": [
+    "enemy_can_be_healed",
+    "gatekeeper_identity_doubt",
+    "reject_sacrifice_premise",
+    "oath_object_experiment",
+    "divine_sense_recovered",
+    "three_sides_have_choice",
+    "identity_does_not_define_fate"
+  ],
+  "ending_ids": [
+    "end-0",
+    "bad-vow-duty",
+    "bad-oath-bearer",
+    "bad-next-hero",
+    "bittersweet-new-vow-old-war",
+    "good-peace-cost",
+    "good-not-over",
+    "true-living-choose"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "npc_id": "ileina",
+  "name": "伊蕾娜",
+  "definition_version": 1,
+  "status": "defined",
+  "context_tags": [
+    "medical-station",
+    "temple-archives"
+  ],
+  "base_description": "資深神官，與十四年前事件關係深。",
+  "public_information": [
+    "知道得比願意說的多；不惡意捏造。"
+  ],
+  "gm_notes": [
+    "害怕資訊太早變成宿命，再次逼人自我犧牲。"
+  ],
+  "initial_relationships": {},
+  "secrets": [],
+  "runtime_created_on_enter": true
+}

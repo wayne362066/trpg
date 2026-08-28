@@ -1,0 +1,19 @@
+{
+  "npc_id": "sever",
+  "name": "sever",
+  "definition_version": 1,
+  "status": "defined",
+  "context_tags": [
+    "temple-archives"
+  ],
+  "base_description": "塞維爾神父，艾德的師父。",
+  "public_information": [
+    "舊版教廷口傳與舊祈禱詞的保存者。"
+  ],
+  "gm_notes": [
+    "可作為備援入口，不需要主線必然出場。"
+  ],
+  "initial_relationships": {},
+  "secrets": [],
+  "runtime_created_on_enter": true
+}

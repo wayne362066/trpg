@@ -17,9 +17,13 @@
 9. `CONTENT_LIFECYCLE.md`：新增／修改地區、NPC、任務的內容 API 與同步規則。
 10. `game/campaign/content_index.json`：目前可用內容的索引與版本。
 11. `API_CAPABILITIES.json`：目前 active 與 planned 的 API 清單；只能呼叫 `active` 能力。
-12. 當前 `game/shared/` 客觀狀態與最近事件。
-13. 提交行動之玩家的私人檔案，以及該玩家相關的 NPC 記憶。
-14. 只有在本次行動明確涉及時，才讀取其他對象的必要摘要；不可讀取對象的完整私人檔案。
+12. `game/campaign/ai_campaign_protocol.md`：本劇本專屬的 GM 演法與劇透防火牆。
+13. `game/campaign/dice_rules.md`：本劇本目前採用的四骰規則。
+14. `game/campaign/timeline.md`：七日倒數與每日壓力。
+15. `game/campaign/gm_reference.md`：依場景選取 GM 參考文件的索引。
+16. 當前 `game/shared/` 客觀狀態與最近事件。
+17. 提交行動之玩家的私人檔案，以及該玩家相關的 NPC 記憶。
+18. 只有在本次行動明確涉及時，才讀取其他對象的必要摘要；不可讀取對象的完整私人檔案。
 
 若第 1～8 項任一文件缺失、格式錯誤或互相矛盾，停止正式判定，回傳 `requires_human_review: true`，說明缺少的文件；不得自行補寫規則。
 

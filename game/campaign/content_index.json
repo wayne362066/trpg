@@ -1,14 +1,194 @@
 {
-  "content_version": 0,
-  "regions": [],
-  "npcs": [
+  "content_version": 1,
+  "source_document": "source/七日誓約_TRPG_AI_GM版_v2_四骰規則.docx",
+  "regions": [
     {
-      "id": "guard-001",
-      "runtime_path": "shared/npcs/guard-001.json",
-      "definition_path": null,
+      "id": "medical-station",
+      "path": "campaign/regions/medical-station.json",
       "status": "active",
-      "context_tags": ["north-gate"]
+      "context_tags": [
+        "medical-station"
+      ]
+    },
+    {
+      "id": "north-border",
+      "path": "campaign/regions/north-border.json",
+      "status": "active",
+      "context_tags": [
+        "north-border"
+      ]
+    },
+    {
+      "id": "temple-archives",
+      "path": "campaign/regions/temple-archives.json",
+      "status": "active",
+      "context_tags": [
+        "temple-archives"
+      ]
+    },
+    {
+      "id": "royal-court",
+      "path": "campaign/regions/royal-court.json",
+      "status": "active",
+      "context_tags": [
+        "royal-court"
+      ]
+    },
+    {
+      "id": "oath-well",
+      "path": "campaign/regions/oath-well.json",
+      "status": "active",
+      "context_tags": [
+        "oath-well"
+      ]
     }
   ],
-  "quests": []
+  "npcs": [
+    {
+      "id": "kane",
+      "runtime_path": null,
+      "definition_path": "campaign/npcs/kane.json",
+      "status": "active",
+      "context_tags": [
+        "global"
+      ]
+    },
+    {
+      "id": "ed",
+      "runtime_path": "shared/npcs/ed.json",
+      "definition_path": "campaign/npcs/ed.json",
+      "status": "active",
+      "context_tags": [
+        "medical-station"
+      ]
+    },
+    {
+      "id": "alicia",
+      "runtime_path": null,
+      "definition_path": "campaign/npcs/alicia.json",
+      "status": "active",
+      "context_tags": [
+        "global"
+      ]
+    },
+    {
+      "id": "cassian",
+      "runtime_path": null,
+      "definition_path": "campaign/npcs/cassian.json",
+      "status": "active",
+      "context_tags": [
+        "global"
+      ]
+    },
+    {
+      "id": "yurian",
+      "runtime_path": null,
+      "definition_path": "campaign/npcs/yurian.json",
+      "status": "active",
+      "context_tags": [
+        "global"
+      ]
+    },
+    {
+      "id": "ileina",
+      "runtime_path": null,
+      "definition_path": "campaign/npcs/ileina.json",
+      "status": "active",
+      "context_tags": [
+        "global"
+      ]
+    },
+    {
+      "id": "false-gatekeeper",
+      "runtime_path": null,
+      "definition_path": "campaign/npcs/false-gatekeeper.json",
+      "status": "active",
+      "context_tags": [
+        "global"
+      ]
+    },
+    {
+      "id": "true-gatekeeper",
+      "runtime_path": null,
+      "definition_path": "campaign/npcs/true-gatekeeper.json",
+      "status": "active",
+      "context_tags": [
+        "global"
+      ]
+    },
+    {
+      "id": "bishop",
+      "runtime_path": null,
+      "definition_path": "campaign/npcs/bishop.json",
+      "status": "active",
+      "context_tags": [
+        "global"
+      ]
+    },
+    {
+      "id": "reinard",
+      "runtime_path": null,
+      "definition_path": "campaign/npcs/reinard.json",
+      "status": "active",
+      "context_tags": [
+        "global"
+      ]
+    },
+    {
+      "id": "sever",
+      "runtime_path": null,
+      "definition_path": "campaign/npcs/sever.json",
+      "status": "active",
+      "context_tags": [
+        "global"
+      ]
+    },
+    {
+      "id": "mira",
+      "runtime_path": null,
+      "definition_path": "campaign/npcs/mira.json",
+      "status": "active",
+      "context_tags": [
+        "global"
+      ]
+    },
+    {
+      "id": "oswin",
+      "runtime_path": null,
+      "definition_path": "campaign/npcs/oswin.json",
+      "status": "active",
+      "context_tags": [
+        "global"
+      ]
+    },
+    {
+      "id": "odric",
+      "runtime_path": null,
+      "definition_path": "campaign/npcs/odric.json",
+      "status": "active",
+      "context_tags": [
+        "global"
+      ]
+    },
+    {
+      "id": "young-demon-victim",
+      "runtime_path": null,
+      "definition_path": "campaign/npcs/young-demon-victim.json",
+      "status": "active",
+      "context_tags": [
+        "global"
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "main-oath",
+      "path": "campaign/quests/main-oath.json",
+      "status": "active",
+      "context_tags": [
+        "global",
+        "oath-well"
+      ]
+    }
+  ]
 }

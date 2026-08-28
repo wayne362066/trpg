@@ -1,6 +1,7 @@
 {
-  "time": "day-1 morning",
-  "scene": "north-gate",
+  "day": 1,
+  "time": "morning",
+  "scene": "medical-station",
   "facts": [
     {
       "id": "north-gate-open",

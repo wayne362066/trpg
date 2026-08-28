@@ -1,0 +1,23 @@
+{
+  "region_id": "oath-well",
+  "name": "井與門／三誓交界",
+  "definition_version": 1,
+  "status": "defined",
+  "base_description": "Day 7 的最終驗證與重立誓約場景。",
+  "public_information": [
+    "誓物",
+    "三方代表",
+    "選擇權"
+  ],
+  "gm_only": {
+    "typical_participants": [
+      "kane",
+      "yurian",
+      "false-gatekeeper",
+      "true-gatekeeper"
+    ]
+  },
+  "context_tags": [
+    "oath-well"
+  ]
+}

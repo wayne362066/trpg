@@ -1,0 +1,20 @@
+{
+  "npc_id": "young-demon-victim",
+  "name": "young-demon-victim",
+  "definition_version": 1,
+  "status": "defined",
+  "context_tags": [
+    "medical-station",
+    "north-border"
+  ],
+  "base_description": "年輕魔族受害者，讓偽裝襲擊的仇恨具象化。",
+  "public_information": [
+    "敵方傷患或受害者。"
+  ],
+  "gm_notes": [
+    "可用背景敘述代替，不必建立固定關係線。"
+  ],
+  "initial_relationships": {},
+  "secrets": [],
+  "runtime_created_on_enter": true
+}

@@ -1,26 +1,53 @@
 {
+  "campaign_id": "seven-day-oath",
+  "title": "七日誓約",
   "language": "zh-TW",
-  "tone": "重視角色選擇與因果，敘事清楚但不替玩家做決定",
+  "tone": "奇幻懸疑、重視調查、醫療、外交與玩家選擇；不替玩家決定答案",
+  "recommended_players": {
+    "min": 2,
+    "max": 5
+  },
+  "expected_length": {
+    "long_sessions": "3-5",
+    "short_sessions": "6-8"
+  },
+  "countdown": {
+    "total_days": 7,
+    "pressure_peak_day": 5,
+    "starting_label": "距離第七日尚有七天"
+  },
+  "dice": {
+    "enabled": true,
+    "available": ["d4", "d6", "d12", "d20"],
+    "default_mode": "four_dice_v2",
+    "never_force_roll_when_outcome_is_already_clear": true
+  },
   "approval_policy": "auto_apply_valid_changes",
   "human_review_triggers": [
     "unknown_rule",
     "character_creation_violation",
     "unknown_change_type",
     "cross_player_target_ambiguous",
-    "high_impact_world_change"
+    "high_impact_world_change",
+    "content_api_not_active"
   ],
   "action_policy": {
     "chat_advances_world": false,
     "one_action_at_a_time": true,
     "npc_state_is_shared": true,
-    "npc_memory_is_per_player": true
+    "npc_memory_is_per_player": true,
+    "allow_zero_combat_completion": true,
+    "allow_player_invented_solutions": true,
+    "fail_forward_for_core_clues": true
   },
   "character_creation": {
     "enabled": true,
     "requires_gm_review": false,
-    "starting_location": "north-gate",
+    "starting_location": "medical-station",
     "starting_health": 10,
     "starting_items": [],
-    "max_initial_clues": 0
+    "max_initial_clues": 0,
+    "required_fields": ["character_name", "concept", "stats"],
+    "stats": ["體魄", "靈巧", "學識", "洞察", "意志", "神眷", "開局特殊骰"]
   }
 }

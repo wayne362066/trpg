@@ -1,0 +1,14 @@
+{
+  "npc_id": "ed",
+  "name": "艾德",
+  "base_description": "洛恩神官，地方資訊窗口。",
+  "state": {
+    "location": "medical-station",
+    "conditions": [],
+    "mood": "忙碌但願意協助",
+    "public_behavior": "照護傷患並整理名單"
+  },
+  "private_memories": {},
+  "private_relationships": {},
+  "state_version": 0
+}

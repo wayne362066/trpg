@@ -1,0 +1,20 @@
+{
+  "npc_id": "ed",
+  "name": "艾德",
+  "definition_version": 1,
+  "status": "defined",
+  "context_tags": [
+    "medical-station",
+    "temple-archives"
+  ],
+  "base_description": "洛恩神官，地方資訊窗口與可成長的可靠後方。",
+  "public_information": [
+    "普通同僚與地方神官；不掌握世界真相。"
+  ],
+  "gm_notes": [
+    "若玩家反覆找他、託付事情，他會升格成可靠的後方與摯友。"
+  ],
+  "initial_relationships": {},
+  "secrets": [],
+  "runtime_created_on_enter": true
+}

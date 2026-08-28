@@ -23,7 +23,11 @@ class ServerConnectionTests(unittest.TestCase):
         self.game_dir = Path(self.temp_dir) / "game"
         shutil.copytree(ROOT / "game", self.game_dir)
         engine = GameEngine(self.game_dir, FakeLlmClient(), ROOT / "GM_PROTOCOL.md")
-        handler = type("ConfiguredApiHandler", (ApiHandler,), {"engine": engine})
+        handler = type(
+            "ConfiguredApiHandler",
+            (ApiHandler,),
+            {"engine": engine, "player_guide_path": ROOT / "PLAYER_CLIENT_GUIDE.md"},
+        )
         try:
             self.server = ThreadingHTTPServer(("127.0.0.1", 0), handler)
         except PermissionError as error:
@@ -65,6 +69,18 @@ class ServerConnectionTests(unittest.TestCase):
         )
         self.assertEqual(status, 200)
         self.assertEqual(view["self"]["profile"]["player_id"], "player-a")
+
+    def test_bootstrap_works_without_conversation_history(self):
+        status, payload = self.request(
+            "GET", f"/rooms/main/bootstrap?{urlencode({'player_id': 'player-a'})}"
+        )
+        self.assertEqual(status, 200)
+        self.assertTrue(payload["ready"])
+        self.assertEqual(payload["player_id"], "player-a")
+        self.assertIn("/rooms/main/actions", payload["guide"])
+        self.assertIn("七日誓約", payload["campaign_intro"])
+        self.assertIn("創角", payload["character_creation"])
+        self.assertEqual(payload["view"]["self"]["profile"]["player_id"], "player-a")
 
     def test_action_and_chat_use_player_id_from_same_http_boundary(self):
         status, message = self.request(

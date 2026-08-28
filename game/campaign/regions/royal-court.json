@@ -1,0 +1,23 @@
+{
+  "region_id": "royal-court",
+  "name": "王都政治場域",
+  "definition_version": 1,
+  "status": "defined",
+  "base_description": "停戰、政治支持與王國安全線。",
+  "public_information": [
+    "停戰理由",
+    "政治成果",
+    "軍事風險"
+  ],
+  "gm_only": {
+    "typical_participants": [
+      "alicia",
+      "bishop",
+      "reinard",
+      "odric"
+    ]
+  },
+  "context_tags": [
+    "royal-court"
+  ]
+}

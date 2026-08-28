@@ -1,0 +1,25 @@
+{
+  "region_id": "temple-archives",
+  "name": "教廷與封存檔案",
+  "definition_version": 1,
+  "status": "defined",
+  "base_description": "古代誓約、十四年前紀錄與替代證據的主要入口。",
+  "public_information": [
+    "古文書",
+    "封存檔案",
+    "神聖感知"
+  ],
+  "gm_only": {
+    "typical_participants": [
+      "ed",
+      "ileina",
+      "yurian",
+      "bishop",
+      "sever",
+      "oswin"
+    ]
+  },
+  "context_tags": [
+    "temple-archives"
+  ]
+}

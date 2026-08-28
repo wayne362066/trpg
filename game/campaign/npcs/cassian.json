@@ -1,0 +1,20 @@
+{
+  "npc_id": "cassian",
+  "name": "卡西安",
+  "definition_version": 1,
+  "status": "defined",
+  "context_tags": [
+    "north-border",
+    "medical-station"
+  ],
+  "base_description": "魔族理性派的談判與利益代表。",
+  "public_information": [
+    "初期視玩家為有用但危險的變數。"
+  ],
+  "gm_notes": [
+    "最看重陣營不方便時仍遵守人道底線；救治敵方傷患是強力證據。"
+  ],
+  "initial_relationships": {},
+  "secrets": [],
+  "runtime_created_on_enter": true
+}

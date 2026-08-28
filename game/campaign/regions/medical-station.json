@@ -1,0 +1,23 @@
+{
+  "region_id": "medical-station",
+  "name": "醫療站／傷患收容處",
+  "definition_version": 1,
+  "status": "defined",
+  "base_description": "Day 1–2 的人道與跨陣營互動入口。",
+  "public_information": [
+    "傷患名單",
+    "教廷治療",
+    "敵我界線"
+  ],
+  "gm_only": {
+    "typical_participants": [
+      "ed",
+      "ileina",
+      "young-demon-victim",
+      "cassian"
+    ]
+  },
+  "context_tags": [
+    "medical-station"
+  ]
+}

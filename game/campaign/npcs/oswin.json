@@ -1,0 +1,19 @@
+{
+  "npc_id": "oswin",
+  "name": "oswin",
+  "definition_version": 1,
+  "status": "defined",
+  "context_tags": [
+    "temple-archives"
+  ],
+  "base_description": "奧斯溫，教廷檔案官。",
+  "public_information": [
+    "知道封存規定與原始授權的歷史。"
+  ],
+  "gm_notes": [
+    "可證明現行程序可能已失去原始授權。"
+  ],
+  "initial_relationships": {},
+  "secrets": [],
+  "runtime_created_on_enter": true
+}

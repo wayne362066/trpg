@@ -1,19 +1,24 @@
 {
   "room_id": "main",
-  "campaign_id": "sample-campaign",
-  "name": "北門的巡邏紀錄",
+  "campaign_id": "seven-day-oath",
+  "name": "七日誓約",
   "ai_boot": "../AI_GM_BOOT.md",
   "protocol": "GM_PROTOCOL.md",
   "data_contract": "../DATA_CONTRACT.md",
   "content_lifecycle": "../CONTENT_LIFECYCLE.md",
   "api_capabilities": "../API_CAPABILITIES.json",
   "content_index": "campaign/content_index.json",
-  "content_version": 0,
+  "content_version": 1,
   "campaign_files": {
     "gm_settings": "campaign/gm_settings.json",
     "world": "campaign/world.md",
     "rules": "campaign/rules.md",
-    "character_creation": "campaign/character_creation.md"
+    "character_creation": "campaign/character_creation.md",
+    "timeline": "campaign/timeline.md",
+    "gm_reference": "campaign/gm_reference.md",
+    "campaign_ai_protocol": "campaign/ai_campaign_protocol.md",
+    "dice_rules": "campaign/dice_rules.md",
+    "scenes": "campaign/scenes/"
   },
   "state_version": 0
 }

@@ -1,0 +1,20 @@
+{
+  "npc_id": "yurian",
+  "name": "尤里安",
+  "definition_version": 1,
+  "status": "defined",
+  "context_tags": [
+    "temple-archives",
+    "oath-well"
+  ],
+  "base_description": "前任勇者；十四年前危機的權威見證者。",
+  "public_information": [
+    "大量真情報與危險錯誤結論。"
+  ],
+  "gm_notes": [
+    "不是反派；他把曾經有效的承擔方案誤認為唯一解。"
+  ],
+  "initial_relationships": {},
+  "secrets": [],
+  "runtime_created_on_enter": true
+}

@@ -1,0 +1,19 @@
+{
+  "npc_id": "alicia",
+  "name": "艾莉西亞",
+  "definition_version": 1,
+  "status": "defined",
+  "context_tags": [
+    "royal-court"
+  ],
+  "base_description": "皇女，代表王國政治現實。",
+  "public_information": [
+    "首先對王國負責，不預設友軍或敵人。"
+  ],
+  "gm_notes": [
+    "提供可執行成果、尊重權限邊界，政治信任才會提升。"
+  ],
+  "initial_relationships": {},
+  "secrets": [],
+  "runtime_created_on_enter": true
+}

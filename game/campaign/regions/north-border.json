@@ -1,0 +1,24 @@
+{
+  "region_id": "north-border",
+  "name": "邊境與偵察線",
+  "definition_version": 1,
+  "status": "defined",
+  "base_description": "偽裝襲擊、雙方誤判與非戰處理的主要場景。",
+  "public_information": [
+    "邊境衝突",
+    "偵察紀錄",
+    "守門人傳聞"
+  ],
+  "gm_only": {
+    "typical_participants": [
+      "kane",
+      "cassian",
+      "false-gatekeeper",
+      "mira",
+      "reinard"
+    ]
+  },
+  "context_tags": [
+    "north-border"
+  ]
+}

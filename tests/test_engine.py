@@ -34,12 +34,12 @@ class JsonEngineTests(unittest.TestCase):
             "changes": [
                 {
                     "type": "npc_condition_added",
-                    "npc_id": "guard-001",
+                    "npc_id": "ed",
                     "condition": {"type": "injured", "severity": 40, "visibility": "observable"},
                 },
                 {
                     "type": "npc_memory_added",
-                    "npc_id": "guard-001",
+                    "npc_id": "ed",
                     "player_id": "player-a",
                     "content": "玩家 A 攻擊了我。",
                     "relationship_delta": {"trust": -30, "hostility": 20},
@@ -62,7 +62,7 @@ class JsonEngineTests(unittest.TestCase):
         # internal memory/relationship record itself.
         self.assertNotIn("玩家 A 攻擊了我", json.dumps(a_view, ensure_ascii=False))
 
-        npc = json.loads((self.game_dir / "shared/npcs/guard-001.json").read_text())
+        npc = json.loads((self.game_dir / "shared/npcs/ed.json").read_text())
         self.assertEqual(len(npc["private_memories"]["player-a"]), 1)
         self.assertNotIn("player-b", npc["private_memories"])
 
