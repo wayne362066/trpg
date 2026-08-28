@@ -26,6 +26,18 @@ python3 -m unittest discover -s tests -v
 PYTHONPATH=src python3 -m trpg_platform.server --data-dir game --host 0.0.0.0 --port 8787
 ```
 
+上面的指令使用 `FakeLlmClient`，只適合測試連線與資料驗證。要讓 GM Codex 自動判定，請在 GM 主機使用 `codex` CLI 已登入的環境啟動背景判定端：
+
+```bash
+PYTHONPATH=src python3 -m trpg_platform.server \
+  --data-dir game \
+  --host 0.0.0.0 \
+  --port 8787 \
+  --gm-backend codex
+```
+
+`--gm-backend codex` 會由遊戲伺服器在本機啟動一個 GM Codex app-server 工作階段；玩家端不需要、也不應該直接連到這個工作階段。省略 `--gm-model` 時使用 Codex 預設模型；若模型服務無法使用，正式行動會被拒絕或要求重試，不會寫入半套狀態。
+
 目前端點：
 
 - `GET /health`
@@ -33,7 +45,7 @@ PYTHONPATH=src python3 -m trpg_platform.server --data-dir game --host 0.0.0.0 --
 - `GET /rooms/main/view?player_id={player_id}`
 - `POST /rooms/main/actions`，JSON body：`{"player_id":"{player_id}","text":"..."}`
 
-這一輪刻意只提供最小入口，尚未處理登入、WebSocket、真正 LLM 連線或完整前端。
+這一輪刻意只提供最小入口，尚未處理登入、WebSocket 或完整前端。`--gm-backend codex` 是本機 GM Codex 的最小連線方式。
 
 ## 重要限制
 

@@ -7,7 +7,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 from .engine import ActionRejected, GameEngine
-from .llm import FakeLlmClient
+from .llm import CodexAppServerClient, FakeLlmClient
 
 
 class AccessDenied(ValueError):
@@ -160,10 +160,31 @@ def main() -> None:
     parser.add_argument("--data-dir", default="game")
     parser.add_argument("--protocol", default=None)
     parser.add_argument("--guide", default=None)
+    parser.add_argument(
+        "--gm-backend",
+        choices=("fake", "codex"),
+        default="fake",
+        help="判定後端；fake 僅供測試，codex 會啟動本機 GM Codex app-server",
+    )
+    parser.add_argument("--gm-model", default=None, help="GM Codex 模型；省略則使用 Codex 預設模型")
+    parser.add_argument("--codex-bin", default="codex", help="codex 可執行檔路徑")
+    parser.add_argument("--gm-timeout", type=float, default=180.0, help="每次 GM 判定等待秒數")
     parser.add_argument("--host", default="0.0.0.0")
     parser.add_argument("--port", type=int, default=8787)
     args = parser.parse_args()
-    engine = GameEngine(args.data_dir, FakeLlmClient(), args.protocol)
+    data_root = Path(args.data_dir)
+    if not data_root.is_absolute():
+        data_root = Path.cwd() / data_root
+    if args.gm_backend == "codex":
+        llm_client = CodexAppServerClient(
+            model=args.gm_model,
+            codex_bin=args.codex_bin,
+            cwd=data_root.parent,
+            timeout_seconds=args.gm_timeout,
+        )
+    else:
+        llm_client = FakeLlmClient()
+    engine = GameEngine(data_root, llm_client, args.protocol)
     guide_path = Path(args.guide) if args.guide else engine.store.root.parent / "PLAYER_CLIENT_GUIDE.md"
     handler = type(
         "ConfiguredApiHandler",
@@ -178,6 +199,9 @@ def main() -> None:
         pass
     finally:
         server.server_close()
+        close = getattr(engine.llm_client, "close", None)
+        if callable(close):
+            close()
 
 
 if __name__ == "__main__":
