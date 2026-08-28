@@ -3,10 +3,11 @@ from __future__ import annotations
 import argparse
 import json
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 from .engine import ActionRejected, GameEngine
-from .llm import FakeLlmClient
+from .llm import CodexAppServerClient, FakeLlmClient
 
 
 class AccessDenied(ValueError):
@@ -15,6 +16,7 @@ class AccessDenied(ValueError):
 
 class ApiHandler(BaseHTTPRequestHandler):
     engine: GameEngine
+    player_guide_path: Path | None = None
 
     def _send(self, status: int, payload: dict) -> None:
         body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
@@ -52,6 +54,19 @@ class ApiHandler(BaseHTTPRequestHandler):
             raise ActionRejected("request body must be an object")
         return value
 
+    def _player_guide(self) -> str:
+        if self.player_guide_path and self.player_guide_path.exists():
+            return self.player_guide_path.read_text(encoding="utf-8")
+        return "請使用 /rooms/main/view 讀取自己的視圖，並使用 /chat 或 /actions 交互。"
+
+    def _campaign_text(self, key: str, fallback: str = "") -> str:
+        files = self.engine.manifest.get("campaign_files", {})
+        path = files.get(key) if isinstance(files, dict) else None
+        if not isinstance(path, str) or not path:
+            return fallback
+        target = self.engine.store.path(path)
+        return target.read_text(encoding="utf-8") if target.exists() and target.is_file() else fallback
+
     def do_GET(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
         if parsed.path == "/health":
@@ -78,6 +93,32 @@ class ApiHandler(BaseHTTPRequestHandler):
                 )
             except ActionRejected as error:
                 self._send(400, {"error": str(error)})
+            return
+        if parsed.path == "/rooms/main/bootstrap":
+            try:
+                player_id = self._player_id(parsed)
+                self._send(
+                    200,
+                    {
+                        "ready": True,
+                        "room_id": self.engine.manifest.get("room_id", "main"),
+                        "player_id": player_id,
+                        "guide": self._player_guide(),
+                        "campaign_intro": self._campaign_text(
+                            "player_intro",
+                            self._campaign_text("world"),
+                        ),
+                        "character_creation": self._campaign_text(
+                            "character_creation",
+                            "請向 GM 詢問目前劇本的創角規則。",
+                        ),
+                        "view": self.engine.get_player_view(player_id),
+                    },
+                )
+            except ActionRejected as error:
+                self._send(400, {"error": str(error)})
+            except AccessDenied as error:
+                self._send(403, {"error": str(error)})
             return
         if parsed.path == "/rooms/main/view":
             try:
@@ -128,11 +169,38 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="JSON-backed TRPG GM prototype")
     parser.add_argument("--data-dir", default="game")
     parser.add_argument("--protocol", default=None)
+    parser.add_argument("--guide", default=None)
+    parser.add_argument(
+        "--gm-backend",
+        choices=("fake", "codex"),
+        default="fake",
+        help="判定後端；fake 僅供測試，codex 會啟動本機 GM Codex app-server",
+    )
+    parser.add_argument("--gm-model", default=None, help="GM Codex 模型；省略則使用 Codex 預設模型")
+    parser.add_argument("--codex-bin", default="codex", help="codex 可執行檔路徑")
+    parser.add_argument("--gm-timeout", type=float, default=180.0, help="每次 GM 判定等待秒數")
     parser.add_argument("--host", default="0.0.0.0")
     parser.add_argument("--port", type=int, default=8787)
     args = parser.parse_args()
-    engine = GameEngine(args.data_dir, FakeLlmClient(), args.protocol)
-    handler = type("ConfiguredApiHandler", (ApiHandler,), {"engine": engine})
+    data_root = Path(args.data_dir)
+    if not data_root.is_absolute():
+        data_root = Path.cwd() / data_root
+    if args.gm_backend == "codex":
+        llm_client = CodexAppServerClient(
+            model=args.gm_model,
+            codex_bin=args.codex_bin,
+            cwd=data_root.parent,
+            timeout_seconds=args.gm_timeout,
+        )
+    else:
+        llm_client = FakeLlmClient()
+    engine = GameEngine(data_root, llm_client, args.protocol)
+    guide_path = Path(args.guide) if args.guide else engine.store.root.parent / "PLAYER_CLIENT_GUIDE.md"
+    handler = type(
+        "ConfiguredApiHandler",
+        (ApiHandler,),
+        {"engine": engine, "player_guide_path": guide_path},
+    )
     server = ThreadingHTTPServer((args.host, args.port), handler)
     print(f"TRPG JSON server listening on http://{args.host}:{args.port}")
     try:
@@ -141,6 +209,9 @@ def main() -> None:
         pass
     finally:
         server.server_close()
+        close = getattr(engine.llm_client, "close", None)
+        if callable(close):
+            close()
 
 
 if __name__ == "__main__":
