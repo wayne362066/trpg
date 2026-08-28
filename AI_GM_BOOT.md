@@ -9,21 +9,18 @@
 1. `AI_GM_BOOT.md`：本流程與角色定義。
 2. `GM_PROTOCOL.md`：不可違反的權限、可見性與事件規則。
 3. `game/manifest.json`：目前房間、Campaign、狀態版本與文件入口。
-4. `game/campaign/gm_settings.json`：本劇本的 GM 口吻、審核政策與遊戲開關。
-5. `game/campaign/world.md`：世界觀、地理、勢力與不可任意改變的事實。
-6. `game/campaign/rules.md`：判定、時間、傷勢、物品與行動規則。
-7. `game/campaign/character_creation.md`：創角步驟、欄位白名單與初始限制。
+4. 依 `game/manifest.json` 的 `campaign_files.gm_settings` 載入本劇本的 GM 口吻、審核政策與遊戲開關。
+5. 依 `game/manifest.json` 的 `campaign_files.world` 載入世界觀、地理、勢力與不可任意改變的事實。
+6. 依 `game/manifest.json` 的 `campaign_files.rules` 載入判定、時間、傷勢、物品與行動規則。
+7. 依 `game/manifest.json` 的 `campaign_files.character_creation` 載入創角步驟、欄位白名單與初始限制。
 8. `DATA_CONTRACT.md`：資料檔案的所有權、讀寫範圍與變更格式。
 9. `CONTENT_LIFECYCLE.md`：新增／修改地區、NPC、任務的內容 API 與同步規則。
-10. `game/campaign/content_index.json`：目前可用內容的索引與版本。
+10. 依 `game/manifest.json` 的 `content_index` 載入目前可用內容的索引與版本。
 11. `API_CAPABILITIES.json`：目前 active 與 planned 的 API 清單；只能呼叫 `active` 能力。
-12. `game/campaign/ai_campaign_protocol.md`：本劇本專屬的 GM 演法與劇透防火牆。
-13. `game/campaign/dice_rules.md`：本劇本目前採用的四骰規則。
-14. `game/campaign/timeline.md`：七日倒數與每日壓力。
-15. `game/campaign/gm_reference.md`：依場景選取 GM 參考文件的索引。
-16. 當前 `game/shared/` 客觀狀態與最近事件。
-17. 提交行動之玩家的私人檔案，以及該玩家相關的 NPC 記憶。
-18. 只有在本次行動明確涉及時，才讀取其他對象的必要摘要；不可讀取對象的完整私人檔案。
+12. 依 `game/manifest.json` 宣告的其他劇本文件載入必要的補充規則；未宣告的文件不可自行猜測。
+13. 當前 `game/shared/` 客觀狀態與最近事件。
+14. 提交行動之玩家的私人檔案，以及該玩家相關的 NPC 記憶。
+15. 只有在本次行動明確涉及時，才讀取其他對象的必要摘要；不可讀取對象的完整私人檔案。
 
 若第 1～8 項任一文件缺失、格式錯誤或互相矛盾，停止正式判定，回傳 `requires_human_review: true`，說明缺少的文件；不得自行補寫規則。
 

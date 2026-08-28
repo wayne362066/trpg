@@ -12,7 +12,7 @@
 - `CAMPAIGN_BRANCHING.md`：說明 `main` 平台核心與劇本分支的分工。
 - `src/trpg_platform/`：極簡仲裁層；玩家只能提交行動，只有仲裁層能寫入正式狀態。
 
-目前的 `FakeLlmClient` 只用於測試與示範，不代表真正的本機模型整合。之後可替換成 Ollama、LM Studio、llama.cpp 或人工 GM adapter。
+`FakeLlmClient` 只用於測試與示範；正式判定可使用 `--gm-backend codex` 啟動本機 GM Codex。未來也可替換成 Ollama、LM Studio、llama.cpp 或其他 GM adapter。
 
 ## 執行測試
 

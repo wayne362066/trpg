@@ -53,6 +53,24 @@ class GameEngine:
     def manifest(self) -> dict[str, Any]:
         return self.store.read_json("manifest.json", {})
 
+    def _campaign_files(self) -> dict[str, str]:
+        """Return the active campaign package paths from the room manifest."""
+        files = self.manifest.get("campaign_files", {})
+        if not isinstance(files, dict):
+            return {}
+        return {
+            str(key): value
+            for key, value in files.items()
+            if isinstance(key, str) and isinstance(value, str) and value
+        }
+
+    def _campaign_path(self, key: str, default: str) -> str:
+        return self._campaign_files().get(key, default)
+
+    def _content_index_path(self) -> str:
+        path = self.manifest.get("content_index", "campaign/content_index.json")
+        return path if isinstance(path, str) and path else "campaign/content_index.json"
+
     def _player_ids(self) -> list[str]:
         directory = self.store.path("players")
         if not directory.exists():
@@ -79,7 +97,7 @@ class GameEngine:
         if not directory.exists():
             return []
         available = {path.stem for path in directory.glob("*.json")}
-        index = self.store.read_json("campaign/content_index.json", {})
+        index = self.store.read_json(self._content_index_path(), {})
         configured = {
             str(item.get("id"))
             for item in index.get("npcs", [])
@@ -152,35 +170,41 @@ class GameEngine:
         return result
 
     def _campaign_context(self) -> dict[str, str]:
-        required = [
-            "campaign/gm_settings.json",
-            "campaign/world.md",
-            "campaign/rules.md",
-            "campaign/character_creation.md",
-            "campaign/content_index.json",
-            "campaign/ai_campaign_protocol.md",
-            "campaign/timeline.md",
-            "campaign/dice_rules.md",
-            "campaign/gm_reference.md",
-        ]
-        missing = [relative for relative in required if not self.store.path(relative).exists()]
+        required = {
+            "gm_settings": self._campaign_path("gm_settings", "campaign/gm_settings.json"),
+            "world": self._campaign_path("world", "campaign/world.md"),
+            "rules": self._campaign_path("rules", "campaign/rules.md"),
+            "character_creation": self._campaign_path(
+                "character_creation", "campaign/character_creation.md"
+            ),
+            "content_index": self._content_index_path(),
+        }
+        missing = [relative for relative in required.values() if not self.store.path(relative).exists()]
         if missing:
             raise ActionRejected("required campaign documents are missing: " + ", ".join(missing))
-        return {
-            "world": self._read_text("campaign/world.md"),
-            "rules": self._read_text("campaign/rules.md"),
-            "gm_settings": self._read_json_text("campaign/gm_settings.json"),
-            "character_creation": self._read_text("campaign/character_creation.md"),
-            "content_index": self._read_json_text("campaign/content_index.json"),
-            "campaign_ai_protocol": self._read_text("campaign/ai_campaign_protocol.md"),
-            "timeline": self._read_text("campaign/timeline.md"),
-            "dice_rules": self._read_text("campaign/dice_rules.md"),
-            "gm_reference": self._read_text("campaign/gm_reference.md"),
-        }
+        result: dict[str, str] = {}
+        for key, relative in required.items():
+            result[key] = (
+                self._read_json_text(relative)
+                if relative.endswith(".json")
+                else self._read_text(relative)
+            )
+        # Extra campaign instructions are optional and are declared by the
+        # campaign package itself; this lets a new script add files without
+        # changing the platform engine.
+        for key, relative in self._campaign_files().items():
+            if key in result or relative.endswith("/") or not self.store.path(relative).exists():
+                continue
+            result[key] = (
+                self._read_json_text(relative)
+                if relative.endswith(".json")
+                else self._read_text(relative)
+            )
+        return result
 
     def _indexed_content(self, scene: str) -> dict[str, list[dict[str, Any]]]:
         """Load active definitions relevant to the current scene for the GM."""
-        index = self.store.read_json("campaign/content_index.json", {})
+        index = self.store.read_json(self._content_index_path(), {})
 
         def load_entries(entries: Any) -> list[dict[str, Any]]:
             loaded = []
@@ -223,6 +247,30 @@ class GameEngine:
         world = self.store.read_json("shared/world.json", {})
         scene = world.get("scene", "")
         npcs = [self.store.read_json(self._npc_file(npc_id), {}) for npc_id in self._npc_ids()]
+        campaign_files = self._campaign_files()
+        ordered_campaign_keys = ["gm_settings", "world", "rules", "character_creation"]
+        campaign_read_order = [
+            f"game/{campaign_files.get(key, self._campaign_path(key, 'campaign/' + key))}"
+            for key in ordered_campaign_keys
+        ]
+        campaign_read_order.append(f"game/{self._content_index_path()}")
+        for key, relative in campaign_files.items():
+            if key not in ordered_campaign_keys and relative.endswith("/"):
+                continue
+            path = f"game/{relative}"
+            if path not in campaign_read_order:
+                campaign_read_order.append(path)
+        loaded_documents = [
+            "AI_GM_BOOT.md",
+            "GM_PROTOCOL.md",
+            "game/manifest.json",
+            *campaign_read_order[:4],
+            "DATA_CONTRACT.md",
+            "CONTENT_LIFECYCLE.md",
+            campaign_read_order[4],
+            "API_CAPABILITIES.json",
+            *campaign_read_order[5:],
+        ]
         actor_npc_memories = {
             npc.get("npc_id"): copy.deepcopy(npc.get("private_memories", {}).get(actor_id, []))
             for npc in npcs
@@ -235,38 +283,16 @@ class GameEngine:
                     "AI_GM_BOOT.md",
                     "GM_PROTOCOL.md",
                     "game/manifest.json",
-                    "game/campaign/gm_settings.json",
-                    "game/campaign/world.md",
-                    "game/campaign/rules.md",
-                    "game/campaign/character_creation.md",
+                    *campaign_read_order[:4],
                     "DATA_CONTRACT.md",
                     "CONTENT_LIFECYCLE.md",
-                    "game/campaign/content_index.json",
+                    campaign_read_order[4],
                     "API_CAPABILITIES.json",
-                    "game/campaign/ai_campaign_protocol.md",
-                    "game/campaign/timeline.md",
-                    "game/campaign/dice_rules.md",
-                    "game/campaign/gm_reference.md",
+                    *campaign_read_order[5:],
                     "relevant shared runtime state",
                     "actor private data",
                 ],
-                "loaded_documents": [
-                    "AI_GM_BOOT.md",
-                    "GM_PROTOCOL.md",
-                    "game/manifest.json",
-                    "game/campaign/gm_settings.json",
-                    "game/campaign/world.md",
-                    "game/campaign/rules.md",
-                    "game/campaign/character_creation.md",
-                    "DATA_CONTRACT.md",
-                    "CONTENT_LIFECYCLE.md",
-                    "game/campaign/content_index.json",
-                    "API_CAPABILITIES.json",
-                    "game/campaign/ai_campaign_protocol.md",
-                    "game/campaign/timeline.md",
-                    "game/campaign/dice_rules.md",
-                    "game/campaign/gm_reference.md",
-                ],
+                "loaded_documents": loaded_documents,
             },
             "protocol": self._protocol(),
             "api_capabilities": self.api_capabilities_path.read_text(encoding="utf-8"),
@@ -378,7 +404,7 @@ class GameEngine:
                 for key, value in stats.items():
                     if not isinstance(key, str) or not isinstance(value, (int, float)):
                         raise ActionRejected("character stats must contain numeric values")
-                settings = self.store.read_json("campaign/gm_settings.json", {})
+                settings = self.store.read_json(self._campaign_path("gm_settings", "campaign/gm_settings.json"), {})
                 if not isinstance(settings, dict):
                     raise ActionRejected("gm_settings must be an object")
                 creation = settings.get("character_creation", {})

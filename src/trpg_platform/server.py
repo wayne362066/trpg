@@ -59,6 +59,14 @@ class ApiHandler(BaseHTTPRequestHandler):
             return self.player_guide_path.read_text(encoding="utf-8")
         return "請使用 /rooms/main/view 讀取自己的視圖，並使用 /chat 或 /actions 交互。"
 
+    def _campaign_text(self, key: str, fallback: str = "") -> str:
+        files = self.engine.manifest.get("campaign_files", {})
+        path = files.get(key) if isinstance(files, dict) else None
+        if not isinstance(path, str) or not path:
+            return fallback
+        target = self.engine.store.path(path)
+        return target.read_text(encoding="utf-8") if target.exists() and target.is_file() else fallback
+
     def do_GET(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
         if parsed.path == "/health":
@@ -96,12 +104,14 @@ class ApiHandler(BaseHTTPRequestHandler):
                         "room_id": self.engine.manifest.get("room_id", "main"),
                         "player_id": player_id,
                         "guide": self._player_guide(),
-                        "campaign_intro": self.engine.store.path("campaign/player_intro.md").read_text(
-                            encoding="utf-8"
+                        "campaign_intro": self._campaign_text(
+                            "player_intro",
+                            self._campaign_text("world"),
                         ),
-                        "character_creation": self.engine.store.path(
-                            "campaign/character_creation.md"
-                        ).read_text(encoding="utf-8"),
+                        "character_creation": self._campaign_text(
+                            "character_creation",
+                            "請向 GM 詢問目前劇本的創角規則。",
+                        ),
                         "view": self.engine.get_player_view(player_id),
                     },
                 )
