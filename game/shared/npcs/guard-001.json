@@ -1,0 +1,14 @@
+{
+  "npc_id": "guard-001",
+  "name": "北門守衛隊長",
+  "base_description": "負責北門巡邏與出入登記，做事謹慎。",
+  "state": {
+    "location": "north-gate",
+    "conditions": [],
+    "mood": "警戒",
+    "public_behavior": "檢查進出城鎮的人"
+  },
+  "private_memories": {},
+  "private_relationships": {},
+  "state_version": 0
+}

@@ -1,0 +1,7 @@
+{
+  "room_id": "main",
+  "campaign_id": "sample-campaign",
+  "name": "北門的巡邏紀錄",
+  "protocol": "GM_PROTOCOL.md",
+  "state_version": 0
+}

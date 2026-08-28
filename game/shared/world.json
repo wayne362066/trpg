@@ -1,0 +1,10 @@
+{
+  "time": "day-1 morning",
+  "scene": "north-gate",
+  "facts": [
+    {
+      "id": "north-gate-open",
+      "content": "北門目前仍然開放。"
+    }
+  ]
+}
