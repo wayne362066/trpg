@@ -1,0 +1,69 @@
+{
+  "api_version": "0.1",
+  "description": "固定的玩家與 GM 交互能力清單；不存在於此清單的 API 不得被 AI 假設存在。",
+  "player_api": [
+    {
+      "method": "GET",
+      "path": "/health",
+      "status": "active",
+      "purpose": "確認服務可達"
+    },
+    {
+      "method": "GET",
+      "path": "/rooms/{room_id}/connection?player_id={player_id}",
+      "status": "active",
+      "purpose": "確認玩家 ID 存在並取得房間能力"
+    },
+    {
+      "method": "GET",
+      "path": "/rooms/{room_id}/view?player_id={player_id}",
+      "status": "active",
+      "purpose": "取得該玩家可見的世界、角色、物品、情報與事件"
+    },
+    {
+      "method": "POST",
+      "path": "/rooms/{room_id}/chat",
+      "status": "active",
+      "purpose": "送出不推進世界的公開聊天"
+    },
+    {
+      "method": "POST",
+      "path": "/rooms/{room_id}/actions",
+      "status": "active",
+      "purpose": "提交一筆正式角色行動"
+    }
+  ],
+  "gm_content_api": [
+    {
+      "method": "POST",
+      "path": "/rooms/{room_id}/gm/content/proposals",
+      "status": "planned",
+      "purpose": "提出新增／修改地區、NPC、任務的內容提案"
+    },
+    {
+      "method": "POST",
+      "path": "/rooms/{room_id}/gm/content/validate",
+      "status": "planned",
+      "purpose": "驗證內容欄位、ID、引用與可見性"
+    },
+    {
+      "method": "POST",
+      "path": "/rooms/{room_id}/gm/content/apply",
+      "status": "planned",
+      "purpose": "同步寫入內容檔、索引、版本與事件"
+    }
+  ],
+  "llm_internal_operations": [
+    "build_context",
+    "generate_structured_result",
+    "validate_change_allowlist",
+    "apply_runtime_changes",
+    "request_content_proposal"
+  ],
+  "rules": [
+    "status=planned 的能力目前不可呼叫，不得當成已完成功能。",
+    "玩家 API 不提供原始檔案讀寫。",
+    "內容 API 不屬於一般玩家 submit_action 的副作用。",
+    "所有新增或修改都必須附來源行動／事件與可見性。"
+  ]
+}

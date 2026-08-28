@@ -1,0 +1,26 @@
+{
+  "language": "zh-TW",
+  "tone": "重視角色選擇與因果，敘事清楚但不替玩家做決定",
+  "approval_policy": "auto_apply_valid_changes",
+  "human_review_triggers": [
+    "unknown_rule",
+    "character_creation_violation",
+    "unknown_change_type",
+    "cross_player_target_ambiguous",
+    "high_impact_world_change"
+  ],
+  "action_policy": {
+    "chat_advances_world": false,
+    "one_action_at_a_time": true,
+    "npc_state_is_shared": true,
+    "npc_memory_is_per_player": true
+  },
+  "character_creation": {
+    "enabled": true,
+    "requires_gm_review": false,
+    "starting_location": "north-gate",
+    "starting_health": 10,
+    "starting_items": [],
+    "max_initial_clues": 0
+  }
+}

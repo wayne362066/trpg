@@ -1,0 +1,14 @@
+{
+  "content_version": 0,
+  "regions": [],
+  "npcs": [
+    {
+      "id": "guard-001",
+      "runtime_path": "shared/npcs/guard-001.json",
+      "definition_path": null,
+      "status": "active",
+      "context_tags": ["north-gate"]
+    }
+  ],
+  "quests": []
+}

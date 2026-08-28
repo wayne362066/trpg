@@ -19,6 +19,7 @@ class GameEngine:
     """Authoritative room coordinator backed by JSON and JSONL files."""
 
     ALLOWED_CHANGE_TYPES = {
+        "character_created",
         "npc_condition_added",
         "npc_condition_removed",
         "npc_memory_added",
@@ -42,6 +43,11 @@ class GameEngine:
         self.store = JsonStore(data_dir)
         self.llm_client = llm_client
         self.protocol_path = Path(protocol_path) if protocol_path else self.store.root.parent / "GM_PROTOCOL.md"
+        document_root = self.protocol_path.parent if protocol_path else self.store.root.parent
+        self.boot_path = document_root / "AI_GM_BOOT.md"
+        self.data_contract_path = document_root / "DATA_CONTRACT.md"
+        self.content_lifecycle_path = document_root / "CONTENT_LIFECYCLE.md"
+        self.api_capabilities_path = document_root / "API_CAPABILITIES.json"
 
     @property
     def manifest(self) -> dict[str, Any]:
@@ -83,9 +89,30 @@ class GameEngine:
         return f"shared/npcs/{npc_id}.json"
 
     def _protocol(self) -> str:
-        if not self.protocol_path.exists():
-            raise ActionRejected(f"required GM protocol is missing: {self.protocol_path}")
-        return self.protocol_path.read_text(encoding="utf-8")
+        missing = [
+            path
+            for path in (
+                self.boot_path,
+                self.protocol_path,
+                self.data_contract_path,
+                self.content_lifecycle_path,
+                self.api_capabilities_path,
+            )
+            if not path.exists()
+        ]
+        if missing:
+            raise ActionRejected(
+                "required AI documents are missing: " + ", ".join(str(path) for path in missing)
+            )
+        return "\n\n".join(
+            [
+                self.boot_path.read_text(encoding="utf-8"),
+                self.protocol_path.read_text(encoding="utf-8"),
+                self.data_contract_path.read_text(encoding="utf-8"),
+                self.content_lifecycle_path.read_text(encoding="utf-8"),
+                self.api_capabilities_path.read_text(encoding="utf-8"),
+            ]
+        )
 
     def _public_player_summary(self, player_id: str) -> dict[str, Any]:
         profile = self.store.read_json(self._player_file(player_id, "profile"), {})
@@ -118,12 +145,29 @@ class GameEngine:
         return result
 
     def _campaign_context(self) -> dict[str, str]:
+        required = [
+            "campaign/gm_settings.json",
+            "campaign/world.md",
+            "campaign/rules.md",
+            "campaign/character_creation.md",
+            "campaign/content_index.json",
+        ]
+        missing = [relative for relative in required if not self.store.path(relative).exists()]
+        if missing:
+            raise ActionRejected("required campaign documents are missing: " + ", ".join(missing))
         return {
             "world": self._read_text("campaign/world.md"),
             "rules": self._read_text("campaign/rules.md"),
+            "gm_settings": self._read_json_text("campaign/gm_settings.json"),
+            "character_creation": self._read_text("campaign/character_creation.md"),
+            "content_index": self._read_json_text("campaign/content_index.json"),
         }
 
     def _read_text(self, relative: str) -> str:
+        path = self.store.path(relative)
+        return path.read_text(encoding="utf-8") if path.exists() else ""
+
+    def _read_json_text(self, relative: str) -> str:
         path = self.store.path(relative)
         return path.read_text(encoding="utf-8") if path.exists() else ""
 
@@ -142,7 +186,40 @@ class GameEngine:
             if actor_id in npc.get("private_memories", {})
         }
         return {
+            "ai": {
+                "must_follow_boot_sequence": True,
+                "read_order": [
+                    "AI_GM_BOOT.md",
+                    "GM_PROTOCOL.md",
+                    "game/manifest.json",
+                    "game/campaign/gm_settings.json",
+                    "game/campaign/world.md",
+                    "game/campaign/rules.md",
+                    "game/campaign/character_creation.md",
+                    "DATA_CONTRACT.md",
+                    "CONTENT_LIFECYCLE.md",
+                    "game/campaign/content_index.json",
+                    "API_CAPABILITIES.json",
+                    "relevant shared runtime state",
+                    "actor private data",
+                ],
+                "loaded_documents": [
+                    "AI_GM_BOOT.md",
+                    "GM_PROTOCOL.md",
+                    "game/manifest.json",
+                    "game/campaign/gm_settings.json",
+                    "game/campaign/world.md",
+                    "game/campaign/rules.md",
+                    "game/campaign/character_creation.md",
+                    "DATA_CONTRACT.md",
+                    "CONTENT_LIFECYCLE.md",
+                    "game/campaign/content_index.json",
+                    "API_CAPABILITIES.json",
+                ],
+            },
             "protocol": self._protocol(),
+            "api_capabilities": self.api_capabilities_path.read_text(encoding="utf-8"),
+            "manifest": self.manifest,
             "campaign": self._campaign_context(),
             "room": {
                 "room_id": self.manifest.get("room_id", "main"),
@@ -213,7 +290,58 @@ class GameEngine:
 
         for change in changes:
             kind = change["type"]
-            if kind == "npc_condition_added":
+            if kind == "character_created":
+                target_player = change.get("player_id", actor_id)
+                self._require_player(target_player)
+                if target_player != actor_id:
+                    raise ActionRejected("character creation can only affect the acting player")
+                profile = load(self._player_file(target_player, "profile"), {})
+                if profile.get("character_creation_status") == "completed":
+                    raise ActionRejected("character creation is already completed")
+                character = change.get("character", {})
+                if not isinstance(character, dict):
+                    raise ActionRejected("character_created needs character object")
+                allowed = {"character_name", "concept", "background_summary", "stats"}
+                unknown = set(character) - allowed
+                if unknown:
+                    raise ActionRejected("unsupported character fields: " + ", ".join(sorted(unknown)))
+                name = character.get("character_name")
+                if not isinstance(name, str) or not 1 <= len(name.strip()) <= 40:
+                    raise ActionRejected("character_name must be 1 to 40 characters")
+                for player_id in self._player_ids():
+                    if player_id == target_player:
+                        continue
+                    other = self.store.read_json(self._player_file(player_id, "profile"), {})
+                    if other.get("character_name") == name.strip():
+                        raise ActionRejected("character_name is already in use")
+                concept = character.get("concept", "")
+                if not isinstance(concept, str) or not 1 <= len(concept.strip()) <= 200:
+                    raise ActionRejected("concept must be 1 to 200 characters")
+                background = character.get("background_summary", "")
+                if not isinstance(background, str) or len(background) > 1000:
+                    raise ActionRejected("background_summary cannot exceed 1000 characters")
+                stats = character.get("stats", {})
+                if not isinstance(stats, dict):
+                    raise ActionRejected("character stats must be an object")
+                for key, value in stats.items():
+                    if not isinstance(key, str) or not isinstance(value, (int, float)):
+                        raise ActionRejected("character stats must contain numeric values")
+                settings = self.store.read_json("campaign/gm_settings.json", {})
+                if not isinstance(settings, dict):
+                    raise ActionRejected("gm_settings must be an object")
+                creation = settings.get("character_creation", {})
+                profile["character_name"] = name.strip()
+                profile["concept"] = concept.strip()
+                profile["background_summary"] = background.strip()
+                profile["stats"] = dict(stats)
+                profile["stats"]["health"] = creation.get("starting_health", profile["stats"].get("health", 10))
+                profile["location"] = creation.get("starting_location", profile.get("location"))
+                profile["character_creation_status"] = "completed"
+                inventory = load(self._player_file(target_player, "inventory"), {"items": []})
+                inventory["items"] = copy.deepcopy(creation.get("starting_items", []))
+                load(self._player_file(target_player, "clues"), {"clues": []})["clues"] = []
+                load(self._player_file(target_player, "npc_memories"), {"memories": []})["memories"] = []
+            elif kind == "npc_condition_added":
                 npc_id = change.get("npc_id")
                 self._require_npc(npc_id)
                 condition = copy.deepcopy(change.get("condition"))
@@ -389,6 +517,7 @@ class GameEngine:
         }:
             return "gm_only"
         if change.get("type") in {
+            "character_created",
             "player_memory_added",
             "item_added",
             "item_removed",

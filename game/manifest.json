@@ -2,6 +2,18 @@
   "room_id": "main",
   "campaign_id": "sample-campaign",
   "name": "北門的巡邏紀錄",
+  "ai_boot": "../AI_GM_BOOT.md",
   "protocol": "GM_PROTOCOL.md",
+  "data_contract": "../DATA_CONTRACT.md",
+  "content_lifecycle": "../CONTENT_LIFECYCLE.md",
+  "api_capabilities": "../API_CAPABILITIES.json",
+  "content_index": "campaign/content_index.json",
+  "content_version": 0,
+  "campaign_files": {
+    "gm_settings": "campaign/gm_settings.json",
+    "world": "campaign/world.md",
+    "rules": "campaign/rules.md",
+    "character_creation": "campaign/character_creation.md"
+  },
   "state_version": 0
 }

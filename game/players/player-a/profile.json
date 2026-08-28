@@ -2,6 +2,7 @@
   "player_id": "player-a",
   "display_name": "玩家 A",
   "character_name": "艾文",
+  "character_creation_status": "completed",
   "location": "north-gate",
   "stats": {
     "health": 10

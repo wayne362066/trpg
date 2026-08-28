@@ -2,6 +2,7 @@
   "player_id": "player-b",
   "display_name": "玩家 B",
   "character_name": "米拉",
+  "character_creation_status": "completed",
   "location": "north-gate",
   "stats": {
     "health": 10

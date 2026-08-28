@@ -110,6 +110,46 @@ class JsonEngineTests(unittest.TestCase):
         self.assertEqual(context["actor"]["player_id"], "player-a")
         self.assertNotIn("player-b", json.dumps(context["actor"], ensure_ascii=False))
         self.assertIn("GM Protocol", context["protocol"])
+        self.assertTrue(context["ai"]["must_follow_boot_sequence"])
+        self.assertIn("game/campaign/character_creation.md", context["ai"]["loaded_documents"])
+        self.assertIn("character_creation", context["campaign"])
+
+    def test_character_creation_uses_whitelisted_fields_and_campaign_defaults(self):
+        profile_path = self.game_dir / "players/player-a/profile.json"
+        profile = json.loads(profile_path.read_text())
+        profile.pop("character_name")
+        profile["character_creation_status"] = "pending"
+        profile_path.write_text(json.dumps(profile), encoding="utf-8")
+        response = {
+            "narration": "角色建立完成。",
+            "public_messages": [],
+            "private_messages": [{"player_id": "player-a", "content": "你的角色已建立。"}],
+            "changes": [
+                {
+                    "type": "character_created",
+                    "player_id": "player-a",
+                    "character": {
+                        "character_name": "新角色",
+                        "concept": "擅長觀察的旅行者",
+                        "background_summary": "來自北方的旅人。",
+                        "stats": {"observation": 3},
+                    },
+                }
+            ],
+        }
+        engine = self.engine_with(response)
+        engine.submit_action("player-a", "我要建立角色：新角色")
+        created = json.loads(profile_path.read_text())
+        self.assertEqual(created["character_creation_status"], "completed")
+        self.assertEqual(created["character_name"], "新角色")
+        self.assertEqual(created["stats"]["health"], 10)
+
+    def test_missing_boot_document_blocks_generation(self):
+        (ROOT / "AI_GM_BOOT.md").read_text(encoding="utf-8")
+        engine = GameEngine(self.game_dir, FakeLlmClient(), self.protocol)
+        engine.boot_path = self.game_dir / "missing-AI_GM_BOOT.md"
+        with self.assertRaises(ActionRejected):
+            engine.submit_action("player-a", "觀察守衛")
 
 
 if __name__ == "__main__":
